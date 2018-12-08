@@ -30,7 +30,7 @@
 >>> example.process(5)
 >>> example.numbers
 [3, 4, 2, 1, 0]
->>> ascii_values("1,2,3")
+>>> List(1).ascii_values("1,2,3")
 [49, 44, 50, 44, 51, 17, 31, 73, 47, 23]
 >>> list4 = List(32)
 >>> list4.blocks_of_sixteen()
@@ -88,7 +88,8 @@ class List:
         self.position = (self.position + length + self.skip) % self.size
         self.skip += 1
 
-    def hash(self, input_list):
+    def hash(self, input):
+        input_list = self.ascii_values(input)
         for i in range(64):
             for x in input_list:
                 self.process(x)
@@ -110,25 +111,24 @@ class List:
             hash_numbers.append(xor(block))
         return hex_block(hash_numbers)
 
+    def ascii_values(self, line):
+        ascii_list = []
+        for x in line:
+            ascii_list.append( ord(x) )
+        # add hard-coded sequence
+        ascii_list.append(17)
+        ascii_list.append(31)
+        ascii_list.append(73)
+        ascii_list.append(47)
+        ascii_list.append(23)
+        return ascii_list
+
 
 def read_input(filename):
     print("Opening file ", filename)
     input_file = open(filename, "r")
     line = input_file.readline()
     return line.strip()
-
-
-def ascii_values(line):
-    ascii_list = []
-    for x in line:
-        ascii_list.append( ord(x) )
-    # add hard-coded sequence
-    ascii_list.append(17)
-    ascii_list.append(31)
-    ascii_list.append(73)
-    ascii_list.append(47)
-    ascii_list.append(23)
-    return ascii_list
 
 
 input_line = read_input("input.txt")
@@ -140,12 +140,10 @@ for x in csv:
 result1 = puzzle.numbers[0] * puzzle.numbers[1]
 print("Part1 Result is ", result1)
 
-ascii_list = ascii_values(input_line)
 puzzle2 = List(256)
-puzzle2.hash(ascii_list)
+puzzle2.hash(input_line)
 result2 = puzzle2.dense_hash()
 print("Part2 Result is ", result2)
-
 
 if __name__ == "__main__":
     import doctest
